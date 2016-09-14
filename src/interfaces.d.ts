@@ -12,6 +12,7 @@ export interface Mapper {
 export interface MapOpts {
   // Relations-related
   relations?: boolean | string[];
+  includeRelations?: boolean,
   relationTypes?: RelationTypeOpt;
 
   // Links-related

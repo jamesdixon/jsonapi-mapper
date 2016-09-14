@@ -45,7 +45,7 @@ export function processData(info: Information, data: Data): SerialOpts {
  */
 function processSample(info: Information, sample: Model): SerialOpts {
   let { bookOpts, linkOpts }: Information = info;
-  let { enableLinks }: BookOpts = bookOpts;
+  let { enableLinks, includeRelations }: BookOpts = bookOpts;
 
   let template: SerialOpts = {};
 
@@ -64,6 +64,11 @@ function processSample(info: Information, sample: Model): SerialOpts {
     if (enableLinks) {
       relTemplate.relationshipLinks = relationshipLinks(linkOpts, relName);
       relTemplate.includedLinks = includedLinks(relLinkOpts);
+    }
+
+    // Include links as compound document
+    if (!includeRelations) {
+        relTemplate.included = false;
     }
 
     template[relName] = relTemplate;

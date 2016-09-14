@@ -1521,6 +1521,46 @@ describe('Bookshelf relations', () => {
   it('should give an API to merge relations attributes', () => {
     pending('Not targeted for release 1.x');
   });
+
+  it('should give an option to include relations', () => {
+    let model: Model = bookshelf.Model.forge<any>({id: '5', atrr: 'value'});
+    (model as any).relations['related-models'] = bookshelf.Collection.forge<any>([
+      bookshelf.Model.forge<any>({id: '10', attr2: 'value20'}),
+      bookshelf.Model.forge<any>({id: '11', attr2: 'value21'})
+    ]);
+
+    let result1: any = mapper.map(model, 'models', {relations: true, includeRelations: true});
+    let result2: any = mapper.map(model, 'models', {relations: true, includeRelations: false});
+    let result3: any = mapper.map(model, 'models', {relations: false});
+
+    let expected1: any = {
+      included: [
+        {
+          id: '10',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value20'
+          }
+        },
+        {
+          id: '11',
+          type: 'related-models',
+          attributes: {
+            attr2: 'value21'
+          }
+        }
+      ]
+    };
+
+    expect(_.matches(expected1)(result1)).toBe(true);
+    expect(_.has(result1, 'data.relationships.related-models')).toBe(true);
+
+    expect(_.has(result2, 'data.relationships.related-models')).toBe(true);
+    expect(_.has(result2, 'included')).toBe(false);
+
+    expect(_.has(result3, 'data.relationships.related-models')).toBe(false);
+    expect(_.has(result3, 'included')).toBe(false);
+  });
 });
 
 describe('Serializer options', () => {
